@@ -545,6 +545,8 @@ private:
 	bool underline_hint = true;
 	bool use_selected_font_color = false;
 
+	Color alt_meta_color = Color(1, 1, 1);
+
 	HorizontalAlignment default_alignment = HORIZONTAL_ALIGNMENT_LEFT;
 	VerticalAlignment vertical_alignment = VERTICAL_ALIGNMENT_TOP;
 	BitField<TextServer::JustificationFlag> default_jst_flags = TextServer::JUSTIFICATION_WORD_BOUND | TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_SKIP_LAST_LINE | TextServer::JUSTIFICATION_DO_NOT_SKIP_SINGLE_LINE;
@@ -835,6 +837,9 @@ public:
 	void set_meta_underline(bool p_underline);
 	bool is_meta_underlined() const;
 
+	void set_alt_meta_color(const Color &p_color);
+	Color get_alt_meta_color() const;
+
 	void set_hint_underline(bool p_underline);
 	bool is_hint_underlined() const;
 
@@ -986,6 +991,7 @@ public:
 
 	RichTextLabel(const String &p_text = String());
 	~RichTextLabel();
+	uint64_t call_tracker = 0;
 };
 
 VARIANT_ENUM_CAST(RichTextLabel::ListType);

@@ -1116,6 +1116,7 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 				Color font_outline_color = (step == DRAW_STEP_OUTLINE) ? _find_outline_color(it, p_outline_color) : Color();
 				Color font_shadow_color = p_font_shadow_color;
 				bool txt_visible = (font_color.a != 0);
+				bool color_override = false;
 				if (step == DRAW_STEP_OUTLINE && (outline_size <= 0 || font_outline_color.a == 0)) {
 					processed_glyphs_step += glyphs[i].repeat;
 					off_step.x += glyphs[i].advance * glyphs[i].repeat;
@@ -1143,6 +1144,7 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 								} break;
 								case META_UNDERLINE_ON_HOVER: {
 									has_ul = (meta == meta_hovering);
+									color_override = has_ul;
 								} break;
 							}
 						}
@@ -1358,6 +1360,8 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 					if (step == DRAW_STEP_TEXT) {
 						if (selected && use_selected_font_color) {
 							font_color = theme_cache.font_selected_color;
+						} else if (color_override) {
+							font_color = alt_meta_color;
 						}
 
 						char_reverse_xform.set_origin(-char_off);
@@ -7498,6 +7502,9 @@ void RichTextLabel::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_meta_underline", "enable"), &RichTextLabel::set_meta_underline);
 	ClassDB::bind_method(D_METHOD("is_meta_underlined"), &RichTextLabel::is_meta_underlined);
 
+	ClassDB::bind_method(D_METHOD("set_alt_meta_color", "alt_color"), &RichTextLabel::set_alt_meta_color);
+	ClassDB::bind_method(D_METHOD("get_alt_meta_color"), &RichTextLabel::get_alt_meta_color);
+
 	ClassDB::bind_method(D_METHOD("set_hint_underline", "enable"), &RichTextLabel::set_hint_underline);
 	ClassDB::bind_method(D_METHOD("is_hint_underlined"), &RichTextLabel::is_hint_underlined);
 
@@ -7629,6 +7636,7 @@ void RichTextLabel::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "custom_effects", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("RichTextEffect"), (PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_SCRIPT_VARIABLE)), "set_effects", "get_effects");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "meta_underlined"), "set_meta_underline", "is_meta_underlined");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hint_underlined"), "set_hint_underline", "is_hint_underlined");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "alt_meta_color"), "set_alt_meta_color", "get_alt_meta_color");
 
 	ADD_GROUP("Threading", "");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "threaded"), "set_threaded", "is_threaded");
@@ -8082,4 +8090,15 @@ RichTextLabel::~RichTextLabel() {
 	_stop_thread();
 	items.free(main->rid);
 	memdelete(main);
+}
+
+void RichTextLabel::set_alt_meta_color(const Color &p_color) {
+	if (alt_meta_color == p_color) {
+		return;
+	}
+	alt_meta_color = p_color;
+}
+
+Color RichTextLabel::get_alt_meta_color() const {
+	return alt_meta_color;
 }
