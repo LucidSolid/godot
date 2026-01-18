@@ -1157,6 +1157,11 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 						} else {
 							new_ul_color = user_ul_color;
 						}
+
+						if (color_override) {
+							new_ul_color = alt_meta_color;
+						}
+
 						if (ul_started && new_ul_color != ul_color_prev) {
 							float y_off = upos;
 							float underline_width = MAX(1.0, uth * theme_cache.base_scale);
